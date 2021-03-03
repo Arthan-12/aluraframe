@@ -35,50 +35,32 @@ class NegociacaoController {
         this._limpaFormulario();
     }
 
+    importaNegociacoes() {
+        let negociacaoService = new NegociacaoService();
+
+        Promise.all([
+            negociacaoService.importaNegociacoesDaSemana(),
+            negociacaoService.importaNegociacoesDaSemanaAnterior(),
+            negociacaoService.importaNegociacoesDaSemanaRetrasada()])
+            .then(negociacoes => {
+                //Precisamos converter a lista de arrays que as negociações retornam, para uma única lista, usando reduce, para importarmos corretamente nossas negociações
+                console.log(negociacoes);
+                negociacoes
+                    .reduce((newArray, array) => newArray.concat(array), [])
+                    //Vamos adicionar cada instancia gerada em nossa lista de negociacoes
+                    .forEach(negociacao => this._listaNegociacoes.adicionaNegociacao(negociacao));
+                    this._mensagem.texto = 'Negociações importadas com sucesso';
+
+            })
+            .catch(err => this._mensagem.texto = err);
+    }
+
     apagaNegociacao() {
 
         this._listaNegociacoes.esvaziaLista();
         this._mensagem.texto = 'Negociações apagadas com sucesso';
     }
 
-    importaNegociacoes() {
-        let xhr = new XMLHttpRequest();
-        //como o endereço é local, apenas colocamos o caminho que está nossa API
-        xhr.open('GET', 'negociacoes/semana');
-        //Uma vez que iniciamos a requisição AJAX com o open(), usamos o método abaixo
-        //para prepará-la para o envio
-        xhr.onreadystatechange = () => {
-            /*
-            Estados possíveis de um Request: 
-
-            0: request ainda não iniciada
-            1: conexão com o servidor estabelecida
-            2: requisição recebida
-            3: processando request
-            4: requisição concluída e a response está pronta
-            */
-            if(xhr.readyState == 4) {
-                if(xhr.status == 200) {
-                    /*O método nos retorna a API em formato texto. Para utlizarmos em nossa
-                    view, precisamos converter para JSON e em seguida mapear esses objetos em
-                    instancias de Negociacao, passando seus atributos.
-                    */
-                    JSON.parse(xhr.responseText)
-                        .map(obj =>
-                            new Negociacao(new Date(obj.data), obj.quantidade, obj.valor))
-                        //Agora vamos adicionar cada instancia gerada em nossa lista de negociacoes
-                        .forEach(negociacao => this._listaNegociacoes.adicionaNegociacao(negociacao));
-                        this._mensagem.texto = 'Negociações importadas com sucesso!'
-                    console.log(xhr.responseText);
-                } else {
-                    console.log('Não foi possível efetuar a request!');
-                    console.log(xhr.responseText);
-                    this._mensagem.texto = 'Não foi possível obter a negociação!'
-                }
-            }
-        };
-        xhr.send();
-    }
 
     _criaNegociacao() {
 
