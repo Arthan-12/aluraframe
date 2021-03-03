@@ -1,7 +1,8 @@
 class ListaNegociacoes {
 
-    constructor(armadilha) {
+    constructor() {
         this._negociacoes = [];
+        this._ascendente = true;
     }
 
     adicionaNegociacao(negociacao) {
@@ -18,5 +19,18 @@ class ListaNegociacoes {
 
     esvaziaLista() {
         this._negociacoes = [];
+    }
+
+    ordenaColuna(criterio) {
+        this._negociacoes.sort(criterio);        
+    }
+
+    inverteOrdem() {
+        this._ascendente = ! this._ascendente;
+        this._negociacoes.reverse();
+    }
+
+    isAscendente() {
+        return this._ascendente;
     }
 }

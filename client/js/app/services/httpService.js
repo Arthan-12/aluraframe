@@ -1,5 +1,5 @@
 class HttpService {
-
+//Lembre-se, todas as requisições HTTP são feitas por Promises!
     getNegociacoes(url) {
 
         return new Promise((resolve, reject) => {
@@ -34,6 +34,27 @@ class HttpService {
                 }
             };
             xhr.send();
+        });
+    }
+
+    postNegociacoes(url, data) {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            //É fundamental que toda Request do tipo POST tenha um Header, informando o que estamos enviando ao servidor
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = () => {
+                if(xhr.readyState == 4) {
+                    if(xhr.status == 200) {
+                        resolve(JSON.parse(xhr.responseText));
+                    } else {
+                        reject(xhr.responseText);
+                    }
+                }
+            };
+            // Usamos JSON.stringify() para converter objeto em uma string no formato JSON, realizando
+            // caminho inverso de nossa requisição do tipo GET
+            xhr.send(JSON.stringify(data));
         });
     }
 }

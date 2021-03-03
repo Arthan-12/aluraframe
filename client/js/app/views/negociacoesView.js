@@ -7,13 +7,15 @@ class NegociacoesView extends View {
     _template(model) {
 
         return `
+        <h3 class="text-center">Ordenação ${model.isAscendente() ? 'Ascendente' : 'Descendente'} </h3>
+
         <table class="table table-hover table-bordered">
         <thead>
             <tr>
-                <th>DATA</th>
-                <th>QUANTIDADE</th>
-                <th>VALOR</th>
-                <th>VOLUME</th>
+            <th onclick="negociacaoController.ordenaColuna('data')">DATA</th>
+            <th onclick="negociacaoController.ordenaColuna('quantidade')">QUANTIDADE</th>
+            <th onclick="negociacaoController.ordenaColuna('valor')">VALOR</th>
+            <th onclick="negociacaoController.ordenaColuna('volume')">VOLUME</th>    
             </tr>
         </thead>
         

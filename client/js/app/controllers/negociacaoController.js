@@ -7,6 +7,7 @@ class NegociacaoController {
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
+        this._ordemAtual = '';
         //Para poder reutilizar a função de update na listaNegociacoes e ela nao ficar presa ao escopo 'this', passamos a instancia com dois parametros, como exemplificado abaixo
 
         this._listaNegociacoes = new Bind(
@@ -15,7 +16,7 @@ class NegociacaoController {
             //view
             new NegociacoesView($('#negociacoesView')),
             //condição (com REST operator no Bind() torna desnecessario o uso do array)
-            'adicionaNegociacao', 'esvaziaLista')
+            'adicionaNegociacao', 'esvaziaLista', 'ordenaColuna', 'inverteOrdem')
         //Se utilizarmos a abordagem de arrow function, o código irá funcionar tambem, pelo fato do escopo dela ser léxico, amarrado ao contexto, diferente da function, que é dinamico
          
 
@@ -80,6 +81,16 @@ class NegociacaoController {
         this._inputValor.value = 0.0;
 
         this._inputData.focus();
+    }
+
+    ordenaColuna(coluna) {
+        //quando colocamos um atributo em colchetes ao objeto, objeto[attr], significa que queremos acessar dinamicamente esse attr e não deixa-lo pre-definido
+        if(this._ordemAtual == coluna) {
+            // inverte a ordem da lista!
+        } else {
+            this._listaNegociacoes.ordenaColuna((a, b) => a[coluna] - b[coluna]);
+        }
+        this._ordemAtual = coluna;
     }
 
 }
