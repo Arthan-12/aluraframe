@@ -50,6 +50,29 @@
             };
         }
 
+        function listaNegociacoesDB() {
+            let transaction = connection.transaction(['negociacoes'], 'readwrite');
+            let store = transaction.objectStore('negociacoes');
+            //Criamos um cursor para poder navegar em nossa store
+            let cursor = store.openCursor();
+            let negociacoes = [];
+
+            cursor.onsuccess = e => {
+                let atual = e.target.result;
+
+                if(atual) {
+                    let data = atual.value;
+                    negociacoes.push(new Negociacao(data._data, data._quantidade, data._valor));
+                    atual.continue();
+                } else {
+                    console.log(negociacoes)
+                }
+            };
+            cursor.onerror = e => {
+                console.log(e.target.error.name);
+            };
+
+        }
 
     </script>
 </body>
