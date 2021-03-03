@@ -13,7 +13,7 @@
 
     <div id="mensagemView"></div>
     
-    <form class="form" onsubmit="negociacaoController.adiciona(event)">
+    <form class="form" onsubmit="negociacaoController.adicionaNegociacao(event)">
         
         <div class="form-group">
             <label for="data">Data</label>
@@ -34,10 +34,10 @@
     </form>
     
     <div class="text-center">
-        <button class="btn btn-primary text-center" type="button">
+        <button onclick="negociacaoController.importaNegociacoes()" class="btn btn-primary text-center" type="button">
             Importar Negociações
         </button>
-        <button class="btn btn-primary text-center" type="button">
+        <button onclick="negociacaoController.apagaNegociacao()" class="btn btn-primary text-center" type="button">
             Apagar
         </button>
     </div> 
@@ -54,6 +54,8 @@
     <script src="js/app/views/negociacoesView.js"></script>
     <script src="js/app/models/mensagem.js"></script>
     <script src="js/app/views/mensagemView.js"></script>
+    <script src="js/app/services/proxyFactory.js"></script>
+    <script src="js/app/helpers/bind.js"></script>
     <script>
         let negociacaoController = new NegociacaoController();
     </script>
