@@ -25,15 +25,44 @@ class NegociacaoController {
             new MensagemView($('#mensagemView')),
             'texto');
 
+        ConnectionFactory
+            .getConnection()
+            .then(connection => {
+                new NegociacaoDAO(connection)
+                    .listaNegociacoesDAO()
+                    .then(negociacoes => {
+
+                        negociacoes.forEach(negociacao => {
+                            this._listaNegociacoes.adicionaNegociacao(negociacao)
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this._mensagem.texto = 'Não foi possível listar as negociações!'
+                    });
+            })
     }
-    
+
+    //Método de integração entre a DAO e a Controller
     adicionaNegociacao(event) {
-
+        //preventDefault é utilizado para não recarregar o formulário
         event.preventDefault();
+        ConnectionFactory
+            .getConnection()
+            .then(connection => {
 
-        this._listaNegociacoes.adicionaNegociacao(this._criaNegociacao());
-        this._mensagem.texto = 'Negociação adicionada com exito!';
-        this._limpaFormulario();
+                let negociacao = this._criaNegociacao();
+                //Uma vez que conseguimos a conexão, instanciamos o DAO para gravar no db
+                new NegociacaoDAO(connection)
+                    .adicionaNegociacaoDAO(negociacao)
+                    .then(() => {
+                        //Uma vez que conseguimos gravar no db, podemos gravar a negociação na model
+                        this._listaNegociacoes.adicionaNegociacao(negociacao);
+                        this._mensagem.texto = 'Negociação adicionada com sucesso';
+                        this._limpaFormulario();
+                        })
+                    })
+                    .catch(err => this._mensagem.texto = err);
     }
 
     importaNegociacoes() {
@@ -58,8 +87,14 @@ class NegociacaoController {
 
     apagaNegociacao() {
 
-        this._listaNegociacoes.esvaziaLista();
-        this._mensagem.texto = 'Negociações apagadas com sucesso';
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegociacaoDAO(connection))
+            .then(dao => dao.apagaTodasNegociacoes())
+            .then(mensagem => {
+                this._mensagem.texto = mensagem;
+                this._listaNegociacoes.esvaziaLista();
+            })
     }
 
 
@@ -67,8 +102,8 @@ class NegociacaoController {
 
         return new Negociacao(
             DateHelper.textoParaData(this._inputData.value),
-            this._inputQuantidade.value,
-            this._inputValor.value
+            parseInt(this._inputQuantidade.value),
+            parseFloat(this._inputValor.value)
         );
 
     }
