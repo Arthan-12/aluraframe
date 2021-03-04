@@ -57,4 +57,5 @@ class HttpService {
             xhr.send(JSON.stringify(data));
         });
     }
+
 }

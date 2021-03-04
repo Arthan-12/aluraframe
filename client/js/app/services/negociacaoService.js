@@ -59,4 +59,18 @@ class NegociacaoService {
         });
         
     }
-}
+
+    cadastraNegociacao(negociacao) {
+
+        return ConnectionFactory
+        .getConnection()
+        .then(connection =>
+            //Uma vez que conseguimos a conexão, instanciamos o DAO para gravar no db
+            new NegociacaoDAO(connection))
+                .then(dao => dao.adicionaNegociacaoDAO(negociacao))
+                .then(() => 'Negociação adicionada com sucesso!')
+                .catch(err => {
+                    throw new Error('Não foi possível adicionar a negociação')
+                });
+        }
+    }

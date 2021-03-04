@@ -19,12 +19,17 @@ class NegociacaoController {
             'adicionaNegociacao', 'esvaziaLista', 'ordenaColuna', 'inverteOrdem')
         //Se utilizarmos a abordagem de arrow function, o código irá funcionar tambem, pelo fato do escopo dela ser léxico, amarrado ao contexto, diferente da function, que é dinamico
          
-
         this._mensagem = new Bind(
             new Mensagem(),
             new MensagemView($('#mensagemView')),
             'texto');
+        
+        this._ordemAtual = '';
 
+        this._init();
+    }
+
+    _init() {
         ConnectionFactory
             .getConnection()
             .then(connection => {
@@ -47,40 +52,61 @@ class NegociacaoController {
     adicionaNegociacao(event) {
         //preventDefault é utilizado para não recarregar o formulário
         event.preventDefault();
-        ConnectionFactory
-            .getConnection()
-            .then(connection => {
+       
+        let negociacao = this._criaNegociacao();
 
-                let negociacao = this._criaNegociacao();
-                //Uma vez que conseguimos a conexão, instanciamos o DAO para gravar no db
-                new NegociacaoDAO(connection)
-                    .adicionaNegociacaoDAO(negociacao)
-                    .then(() => {
-                        //Uma vez que conseguimos gravar no db, podemos gravar a negociação na model
-                        this._listaNegociacoes.adicionaNegociacao(negociacao);
-                        this._mensagem.texto = 'Negociação adicionada com sucesso';
-                        this._limpaFormulario();
-                        })
-                    })
-                    .catch(err => this._mensagem.texto = err);
+        new NegociacaoService()
+            .cadastraNegociacao(negociacao)
+            .then(mensagem => {
+                this._listaNegociacoes.adicionaNegociacao(negociacao);
+                this._mensagem.texto = mensagem;
+                this._limpaFormulario();
+            })
+            .catch(err => this._mensagem.texto = err)
     }
 
-    importaNegociacoes() {
+    importaTodasNegociacoes() {
         let negociacaoService = new NegociacaoService();
 
         Promise.all([
             negociacaoService.importaNegociacoesDaSemana(),
             negociacaoService.importaNegociacoesDaSemanaAnterior(),
             negociacaoService.importaNegociacoesDaSemanaRetrasada()])
-            .then(negociacoes => {
+            //O método filter vai varrer o array de negociacoes inteiro usando o parametro definido pelo usuário e filtrar os elementos que atendem a ele, num novo array
+            .then(negociacoes => negociacoes
+                .filter(negociacao =>
+                !this._listaNegociacoes.negociacoes
+                //O método some vai varrer o array em busca do elemento definido no parametro, no caso a string de uma negociacao existente (nao compare elementos diretamente em js!)
+                //e realizar o break assim que encontrar o elemento que atender a exigencia
+                .some(negociacaoExistente =>
+                    JSON.stringify(negociacao) == JSON.stringify(negociacaoExistente)))
+                    )
+                .then(negociacoes => {
                 //Precisamos converter a lista de arrays que as negociações retornam, para uma única lista, usando reduce, para importarmos corretamente nossas negociações
-                console.log(negociacoes);
                 negociacoes
                     .reduce((newArray, array) => newArray.concat(array), [])
                     //Vamos adicionar cada instancia gerada em nossa lista de negociacoes
                     .forEach(negociacao => this._listaNegociacoes.adicionaNegociacao(negociacao));
                     this._mensagem.texto = 'Negociações importadas com sucesso';
 
+            })
+            .catch(err => this._mensagem.texto = err);
+    }
+
+    importaNegociacoes() {
+        let negociacaoService = new NegociacaoService();
+
+            negociacaoService.importaNegociacoesDaSemana()
+            .then(negociacoes => negociacoes
+                .filter(negociacao =>
+                    !this._listaNegociacoes.negociacoes
+                        .some(negociacaoExistente =>
+                            JSON.stringify(negociacao) == JSON.stringify(negociacaoExistente)))
+                            )
+                            .then(negociacoes => {
+                            negociacoes
+                                .forEach(negociacao => this._listaNegociacoes.adicionaNegociacao(negociacao));
+                                    this._mensagem.texto = 'Negociações importadas com sucesso';
             })
             .catch(err => this._mensagem.texto = err);
     }
