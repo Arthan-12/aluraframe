@@ -13,7 +13,7 @@
 
     <div id="mensagemView"></div>
     
-    <form class="form" onsubmit="negociacaoController.adicionaNegociacao(event)">
+    <form class="form">
         
         <div class="form-group">
             <label for="data">Data</label>
@@ -34,10 +34,10 @@
     </form>
     
     <div class="text-center">
-        <button onclick="negociacaoController.importaNegociacoes()" class="btn btn-primary text-center" type="button">
+        <button id="importa-negociacoes" class="btn btn-primary text-center" type="button">
             Importar Negociações
         </button>
-        <button onclick="negociacaoController.apagaNegociacao()" class="btn btn-primary text-center" type="button">
+        <button id="apaga-negociacoes" class="btn btn-primary text-center" type="button">
             Apagar
         </button>
     </div> 
@@ -45,24 +45,14 @@
     <br>
 
     <div id="negociacoesView"></div>
+    <script> var exports = {}; </script>
 
-    <script src="js/app/polyfill/fetch.js"></script>
-    <script src="js/app/models/negociacao.js"></script>
-    <script src="js/app/controllers/negociacaoController.js"></script>
-    <script src="js/app/helpers/dateHelper.js"></script>
-    <script src="js/app/views/view.js"></script>
-    <script src="js/app/models/listaNegociacoes.js"></script>
-    <script src="js/app/views/negociacoesView.js"></script>
-    <script src="js/app/models/mensagem.js"></script>
-    <script src="js/app/views/mensagemView.js"></script>
-    <script src="js/app/services/proxyFactory.js"></script>
-    <script src="js/app/helpers/bind.js"></script>
-    <script src="js/app/services/negociacaoService.js"></script>
-    <script src="js/app/services/httpService.js"></script>
-    <script src="js/app/services/connectionFactory.js"></script>
-    <script src="js/app/dao/negociacaoDAO.js"></script>
+    <script src="node_modules/systemjs/dist/system.js"></script>
     <script>
-        let negociacaoController = new NegociacaoController();
+        System.defaultJSExtensions = true // omite a extensão .js dos imports
+        System.import('js/app/boot').catch(function(err){
+            console.error(err.message);
+        });
     </script>
 </body>
 </html>

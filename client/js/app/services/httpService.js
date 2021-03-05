@@ -1,28 +1,80 @@
-class HttpService {
+'use strict';
 
-    _handleErrors(res) {
-        if(!res.ok) throw new Error(res.statusText);
-        return res
+System.register([], function (_export, _context) {
+    "use strict";
+
+    var _createClass, HttpService;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
     }
 
-    //Lembre-se, todas as requisições HTTP são feitas por Promises!
-    //Lembre-se, nem todos navegadores possuem suporte para Fetch API, é importante possuir um Polyfill para que haja sua compatibilidade 
-    getNegociacoes(url) {
+    return {
+        setters: [],
+        execute: function () {
+            _createClass = function () {
+                function defineProperties(target, props) {
+                    for (var i = 0; i < props.length; i++) {
+                        var descriptor = props[i];
+                        descriptor.enumerable = descriptor.enumerable || false;
+                        descriptor.configurable = true;
+                        if ("value" in descriptor) descriptor.writable = true;
+                        Object.defineProperty(target, descriptor.key, descriptor);
+                    }
+                }
 
-        return fetch(url)
-            .then(res => this._handleErrors(res))
-            .then(res => res.json());
-    }
+                return function (Constructor, protoProps, staticProps) {
+                    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+                    if (staticProps) defineProperties(Constructor, staticProps);
+                    return Constructor;
+                };
+            }();
 
-    postNegociacoes(url, data) {
+            _export('HttpService', HttpService = function () {
+                function HttpService() {
+                    _classCallCheck(this, HttpService);
+                }
 
-        //Uma requisição http do tipo post precisa ser composta de header, method, body com o conteudo parseado pro formato correto, além da tratativa da response
-        return fetch(url, {
-            headers: {'Content-type':'application/json'},
-            method: 'post',
-            body: JSON.stringify(data)
-        })
-        .then(res => this._handleErrors(res));
-    }
+                _createClass(HttpService, [{
+                    key: '_handleErrors',
+                    value: function _handleErrors(res) {
+                        if (!res.ok) throw new Error(res.statusText);
+                        return res;
+                    }
+                }, {
+                    key: 'getNegociacoes',
+                    value: function getNegociacoes(url) {
+                        var _this = this;
 
-}
+                        return fetch(url).then(function (res) {
+                            return _this._handleErrors(res);
+                        }).then(function (res) {
+                            return res.json();
+                        });
+                    }
+                }, {
+                    key: 'postNegociacoes',
+                    value: function postNegociacoes(url, data) {
+                        var _this2 = this;
+
+                        //Uma requisição http do tipo post precisa ser composta de header, method, body com o conteudo parseado pro formato correto, além da tratativa da response
+                        return fetch(url, {
+                            headers: { 'Content-type': 'application/json' },
+                            method: 'post',
+                            body: JSON.stringify(data)
+                        }).then(function (res) {
+                            return _this2._handleErrors(res);
+                        });
+                    }
+                }]);
+
+                return HttpService;
+            }());
+
+            _export('HttpService', HttpService);
+        }
+    };
+});
+//# sourceMappingURL=httpService.js.map
